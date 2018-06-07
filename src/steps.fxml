@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane cacheShape="false" prefHeight="523.0" prefWidth="785.0" scaleShape="false" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.StepController">
+   <children>
+      <Button fx:id="prevBtn" disable="true" layoutX="281.0" layoutY="459.0" mnemonicParsing="false" onAction="#prevAction" prefHeight="25.0" prefWidth="72.0" text="Prev" />
+      <Button fx:id="nextBtn" layoutX="375.0" layoutY="459.0" mnemonicParsing="false" onAction="#nextAction" prefHeight="25.0" prefWidth="72.0" text="Next" />
+      <Button fx:id="resultBtn" layoutX="465.0" layoutY="459.0" mnemonicParsing="false" onAction="#resultAction" prefHeight="25.0" prefWidth="72.0" text="Result" />
+      <StackedBarChart fx:id="hist" layoutX="14.0" layoutY="14.0" prefHeight="400.0" prefWidth="743.0">
+        <xAxis>
+          <CategoryAxis label="Machines" side="BOTTOM" />
+        </xAxis>
+        <yAxis>
+          <NumberAxis label="time" side="LEFT" />
+        </yAxis>
+      </StackedBarChart>
+      <Line fx:id="lbLine" disable="true" endX="750.0" endY="153.0" startX="30.0" startY="153.0" stroke="RED" />
+   </children>
+</AnchorPane>
