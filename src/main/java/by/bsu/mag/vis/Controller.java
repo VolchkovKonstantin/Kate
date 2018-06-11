@@ -1,5 +1,6 @@
-package sample;
+package main.java.by.bsu.mag.vis;
 
+import by.bsu.mag.algo.Algo;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -36,7 +37,9 @@ public class Controller {
     private void openNewWindow() {
         Parent root;
         try {
-            root = FXMLLoader.load(getClass().getResource("steps.fxml"));
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/fxml/steps.fxml"));
+            root = loader.load();
             Stage stage = new Stage();
             stage.setTitle("QmCmax/k");
             stage.setScene(new Scene(root, 850, 550));

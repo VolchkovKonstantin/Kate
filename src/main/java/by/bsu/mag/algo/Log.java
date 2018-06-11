@@ -1,4 +1,4 @@
-package sample;
+package main.java.by.bsu.mag.algo;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -15,7 +15,10 @@ public class Log {
 
     public Log(String situation, List<List<Integer>> NCup, Map<Integer, List<Integer>> result, BigDecimal LB) {
         this.situation = situation;
-        this.NCup = new ArrayList<>(NCup);
+        this.NCup = new ArrayList<>();
+        for (int i = 0; i < NCup.size(); i++) {
+            this.NCup.add(new ArrayList<>(NCup.get(i)));
+        }
         this.result = new HashMap<>(result);
         this.LB = LB;
     }

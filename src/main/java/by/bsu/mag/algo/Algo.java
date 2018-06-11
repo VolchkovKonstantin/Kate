@@ -1,24 +1,27 @@
-package sample;
+package main.java.by.bsu.mag.algo;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class Algo {
 
-    private static int N, M, MAX_K;
+    public static int N, M, MAX_K;
     private static BigDecimal LB;
     private static Integer[] P, S, K;
     private static BigDecimal[] Z;
-    static BigDecimal[][] T;
+    public static BigDecimal[][] T;
     private static List<Integer> Nv;
     private static List<Integer> Ns;
+    private static List<Integer> Nother;
     private static List<Integer> Nall;
     private static List<Integer> Jv;
     private static List<Integer> Jall;
     private static List<List<Integer>> N_CUP;
     private static Map<Integer, List<Integer>> result;
-    static List<Log> history;
+    public static List<Log> history;
 
 
     public Algo(Scanner scanner) {
@@ -50,7 +53,6 @@ public class Algo {
     }
 
     private static void init(boolean isFirst) {
-        history = new ArrayList<>();
         Z = new BigDecimal[M];
         K = new Integer[M];
         for (int j = 0; j < M; j++) {
@@ -58,6 +60,7 @@ public class Algo {
             Z[j] = BigDecimal.ZERO;
         }
         if (isFirst) {
+            history = new ArrayList<>();
             calculateLB();
         }
         N_CUP = new ArrayList<>();
@@ -65,11 +68,11 @@ public class Algo {
             N_CUP.add(new ArrayList<>());
         }
         Ns = new ArrayList<>();
-        Nall = new ArrayList<>();
         for (int i = 0; i < N; i++) {
             Ns.add(i);
-            Nall.add(i);
         }
+        Nother = new ArrayList<>(Ns);
+        Nall = new ArrayList<>(Ns);
         Jall = new ArrayList<>();
         for (int j = 0; j < M; j++) {
             Jall.add(j);
@@ -127,8 +130,13 @@ public class Algo {
         return lessOrEquals(Z[j].add(divide(P[i], S[j])), LB);
     }
 
-    private static List<Integer> filter_more_LB(int j0) {
+    private static List<Integer> filter_less_LB(int j0) {
         List<Integer> temp = new ArrayList<>(Ns);
+        return temp.stream().filter(i -> lessOrEquals(divide(P[i], S[j0]), LB)).collect(Collectors.toList());
+    }
+
+    private static List<Integer> filter_more_LB(int j0) {
+        List<Integer> temp = new ArrayList<>(Nother);
         return temp.stream().filter(i -> more(divide(P[i], S[j0]), LB)).collect(Collectors.toList());
     }
 
@@ -148,12 +156,16 @@ public class Algo {
 
             if (checkLB(i, j) && K[j] < MAX_K) {
                 currentDevice.add(i);
+                Nother.remove((Integer)i);
+//                Ns.remove((Integer)i);
                 Z[j] = Z[j].add(divide(P[i], S[j]));
                 K[j]++;
                 k++;
             } else {
                 N_CUP.set(j, new ArrayList<>(currentDevice));
-                log("fill");
+                if (!currentDevice.isEmpty()) {
+                    log("fill");
+                }
                 currentDevice = new ArrayList<>();
                 if (K[j] == MAX_K) {
                     doSituation1(true, j);
@@ -182,6 +194,7 @@ public class Algo {
         }
         N_CUP.set(j, new ArrayList<>(currentDevice));
 
+        log("result");
 
         for (int l = 0; l < M; l++) {
             if (K[l] == 0) {
@@ -196,7 +209,7 @@ public class Algo {
     }
 
     private static void doSituation1(boolean isHatch, int j0) {
-        log("1");
+        //        List<Integer> Nj0 = filter_less_LB(j0);
         List<Integer> Nj0_hatch = null;
         if (isHatch) {
             try {
@@ -214,16 +227,28 @@ public class Algo {
         BigDecimal zTemp = divide(sumP, S[j0]);
         if (more(LB, zTemp)) {
             //situation 1.1
-            log("1.1");
             BigDecimal LB1 = calculateEstimate1(Nj0_hatch, j0);
             if (lessOrEquals(LB1, LB)) {
                 finishWithShop(Nj0_hatch, j0);
+                log("1.1");
+            } else {
+                LB = LB1;
+
+                //just for log
+                N_CUP = new ArrayList<>();
+                for (int i = 0; i < M; i++) {
+                    N_CUP.add(new ArrayList<>());
+                }
+                log("1.1.1");
+
+                work(false);
+                throw new FinishedException();
             }
 
         } else if (more(zTemp, LB) && lessOrEquals(zTemp, LB.multiply(new BigDecimal(2)))) {
             // situation 1.2
-            log("1.2");
             finishWithShop(Nj0_hatch, j0);
+            log("1.2");
         } else if (more(zTemp, LB.multiply(new BigDecimal(2)))) {
             // situation 1.3
             log("1.3");
@@ -263,13 +288,14 @@ public class Algo {
         BigDecimal LB1 = null;
         List<Integer> possibleJobs = filter_more_LB(j0);
         if (K[j0] == 0) {
-            log("2");
             LB1 = calculateEstimate2(possibleJobs, j0);
         }
         int i = 0;
         if (K[j0] != 0 || lessOrEquals(LB1, LB)) {
-            log("2.2");
             for (int j = 0; j < j0; j++) {
+                if (K[j0] != 0) {
+                    possibleJobs = Nother;
+                }
                 if (i == possibleJobs.size()) {
                     break;
                 }
@@ -279,7 +305,6 @@ public class Algo {
                     currentDevice.add(possibleJobs.get(i));
                     Z[j] = Z[j].add(divide(P[possibleJobs.get(i)], S[j]));
                     i++;
-                    j++;
                     if (i == possibleJobs.size()) {
                         break;
                     }
@@ -287,17 +312,36 @@ public class Algo {
                 if (!currentDevice.isEmpty()) {
                     List<Integer> additive = N_CUP.get(j);
                     additive.addAll(currentDevice);
-                    additive.sort(Collections.reverseOrder());
-                    N_CUP.set(j, additive);
-                    doSituation1(false, j);
+//                    additive.sort(Collections.reverseOrder());
+//                    N_CUP.set(j, additive);
+//                    doSituation2_2(j);
+                    log("2.2");
+                    doSituation1(true, j);
+                    break;
                 }
             }
         } else {
-            log("2.1");
             if (LB1 == null) {
                 System.err.println("LB1 == null!!");
             }
+            //just for log
+            N_CUP = new ArrayList<>();
+            for (int u = 0; u < M; i++) {
+                N_CUP.add(new ArrayList<>());
+            }
+            log("2.1");
+
             work(false);
+            throw new FinishedException();
+        }
+    }
+
+    private static void doSituation2_2(int j1) {
+        if (more(Z[j1], LB)) {
+            log("2.2_start");
+            finishWithShop(N_CUP.get(j1), j1);
+        } else {
+            doSituation1(true, j1);
         }
     }
 
@@ -315,8 +359,10 @@ public class Algo {
         return divide(sumP, sumQ);
     }
 
-    private static BigDecimal sumPrevArrayP(List<Integer> array, int index) {
-        List<Integer> temp = array.subList(0, index);
+    private static BigDecimal sumPrevArrayP(int pk) {
+        List<Integer> temp = new ArrayList<>(Ns);
+        temp.removeAll(Nother);
+        temp.add(pk);
         return new BigDecimal(temp.stream().mapToInt(i -> P[i]).sum());
     }
 
@@ -324,7 +370,7 @@ public class Algo {
         BigDecimal minGlobal = null;
         for (int i = 0; i < possibleJobs.size(); i++) {
             Integer pk = possibleJobs.get(i);
-            BigDecimal minLocal = divide(P[pk], S[j1]).min(sumPrevArrayP(possibleJobs, i).min(sumS(0, j1)));
+            BigDecimal minLocal = divide(P[pk], S[j1]).min(divide(sumPrevArrayP(pk), sumS(0, j1)));
             if (minGlobal == null) {
                 minGlobal = minLocal;
             } else {
@@ -342,9 +388,15 @@ public class Algo {
     private static void finishWithShop(List<Integer> currentWorks, int j0) {
         List<Integer> temp = new ArrayList<>(currentWorks);
         result.put(j0, temp);
+        N_CUP.set(j0, temp);
         Nv.addAll(temp);
         Jv.add(j0);
         Ns.removeAll(currentWorks);
+        for (int y = 0; y < M; y++) {
+            if (!Jv.contains(y)) {
+                N_CUP.set(y, new ArrayList<>());
+            }
+        }
 
     }
 
@@ -359,9 +411,26 @@ public class Algo {
         }
         System.out.println();
         System.out.println(LB);
-        work(true);
+        try {
+            work(true);
+        } catch (FinishedException ex) {
+            System.out.print("Finish");
+        }
         for (Log log : history) {
             System.out.println(log);
+        }
+
+    }
+
+    public static void main(String[] args) throws FileNotFoundException {
+        Algo algo = new Algo(new Scanner(new File("test.txt")));
+        algo.start();
+        for (Map.Entry<Integer, List<Integer>> entry : result.entrySet()) {
+            System.out.print(entry.getKey() + " : ");
+            for (Integer i : entry.getValue()) {
+                System.out.print(i + " ");
+            }
+            System.out.println();
         }
 
     }

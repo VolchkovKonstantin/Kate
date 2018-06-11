@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.shape.*?>
-<?import javafx.scene.chart.*?>
-<?import javafx.scene.control.*?>
-<?import java.lang.*?>
-<?import javafx.scene.layout.*?>
-
-<AnchorPane cacheShape="false" prefHeight="523.0" prefWidth="785.0" scaleShape="false" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.StepController">
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.StackedBarChart?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Line?>
+<AnchorPane cacheShape="false" prefHeight="523.0" prefWidth="785.0" scaleShape="false" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="by.bsu.mag.vis.StepController">
    <children>
       <Button fx:id="prevBtn" disable="true" layoutX="281.0" layoutY="459.0" mnemonicParsing="false" onAction="#prevAction" prefHeight="25.0" prefWidth="72.0" text="Prev" />
       <Button fx:id="nextBtn" layoutX="375.0" layoutY="459.0" mnemonicParsing="false" onAction="#nextAction" prefHeight="25.0" prefWidth="72.0" text="Next" />
@@ -16,9 +17,10 @@
           <CategoryAxis label="Machines" side="BOTTOM" />
         </xAxis>
         <yAxis>
-          <NumberAxis label="time" side="LEFT" />
+          <NumberAxis fx:id="numberAxis" label="time" side="LEFT" />
         </yAxis>
       </StackedBarChart>
       <Line fx:id="lbLine" disable="true" endX="750.0" endY="153.0" startX="30.0" startY="153.0" stroke="RED" />
+      <Label fx:id="situation" layoutX="16.0" layoutY="406.0" />
    </children>
 </AnchorPane>
