@@ -1,6 +1,10 @@
-package main.java.by.bsu.mag.vis;
+package by.bsu.mag.vis;
 
 import by.bsu.mag.algo.Algo;
+import java.io.BufferedReader;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -27,6 +31,17 @@ public class Controller {
 
     @FXML
     private Button inputDataBtn;
+
+    public static String backup;
+
+    @FXML
+    public void initialize() throws URISyntaxException {
+        if (backup == null || backup.isEmpty()) {
+//            readFile(new File(getClass().getResource("/test2.txt").toURI()));
+        } else {
+            inputDataArea.setText(backup);
+        }
+    }
 
     private void readInput() {
         String text = inputDataArea.getText();
@@ -55,11 +70,7 @@ public class Controller {
             inputDataArea.setText("");
             Scanner s = new Scanner(file).useDelimiter("\\s+");
             while (s.hasNext()) {
-                if (s.hasNextInt()) {
-                    inputDataArea.appendText(s.nextInt() + " ");
-                } else {
-                    inputDataArea.appendText(s.next() + " ");
-                }
+                inputDataArea.appendText(s.nextLine() + "\n");
             }
             startBtn.setDisable(false);
         } catch (FileNotFoundException ex) {

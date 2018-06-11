@@ -1,4 +1,4 @@
-package main.java.by.bsu.mag;
+package by.bsu.mag;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

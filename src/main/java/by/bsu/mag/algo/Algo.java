@@ -1,4 +1,4 @@
-package main.java.by.bsu.mag.algo;
+package by.bsu.mag.algo;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,7 +10,7 @@ public class Algo {
 
     public static int N, M, MAX_K;
     private static BigDecimal LB;
-    private static Integer[] P, S, K;
+    public static Integer[] P, S, K;
     private static BigDecimal[] Z;
     public static BigDecimal[][] T;
     private static List<Integer> Nv;
@@ -22,6 +22,27 @@ public class Algo {
     private static List<List<Integer>> N_CUP;
     private static Map<Integer, List<Integer>> result;
     public static List<Log> history;
+    public static String backup;
+
+    private void createBackup() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(N).append(" ").append(M).append(" ").append(MAX_K).append("\n");
+        for (int i = 0; i < N; i++) {
+            sb.append(P[i]);
+            if (i != N - 1) {
+                sb.append(" ");
+            }
+        }
+        sb.append("\n");
+
+        for (int j = 0; j < M; j++) {
+            sb.append(S[j]);
+            if (j != M - 1) {
+                sb.append(" ");
+            }
+        }
+        backup = sb.toString();
+    }
 
 
     public Algo(Scanner scanner) {
@@ -39,6 +60,8 @@ public class Algo {
         for (int j = 0; j < M; j++) {
             S[j] = scanner.nextInt();
         }
+
+        createBackup();
 
         Arrays.sort(P, Collections.reverseOrder());
         Arrays.sort(S, Collections.reverseOrder());
@@ -156,7 +179,7 @@ public class Algo {
 
             if (checkLB(i, j) && K[j] < MAX_K) {
                 currentDevice.add(i);
-                Nother.remove((Integer)i);
+                Nother.remove((Integer) i);
 //                Ns.remove((Integer)i);
                 Z[j] = Z[j].add(divide(P[i], S[j]));
                 K[j]++;

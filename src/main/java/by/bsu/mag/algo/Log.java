@@ -1,4 +1,4 @@
-package main.java.by.bsu.mag.algo;
+package by.bsu.mag.algo;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
